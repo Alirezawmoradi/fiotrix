@@ -16,6 +16,8 @@ Build a **PWA** with **React + TypeScript** that lets users search keywords insi
 5. **Multi-result navigation**: when a term matches several places, up/down arrow buttons appear automatically next to the results; clicking them smoothly scrolls to the previous/next match.
 6. A **counter** showing how many matches were found and which one is active (e.g. `3 / 12`).
 
+The app searches a **single built-in demo text** (`src/data/sampleText.ts`). Users cannot paste or upload their own text.
+
 ### Evaluation priorities (from the task brief)
 - Search must be **instant and efficient** on large texts.
 - **Smooth** highlight animations and **scroll synced** to the active match position.
@@ -78,19 +80,17 @@ src/
     useAutocomplete.ts      # suggestion list state + keyboard handling
     useInstallPrompt.ts     # beforeinstallprompt handling
     useOnlineStatus.ts      # navigator.onLine + events
-    useDocumentText.ts      # current text: sample / pasted / uploaded, persisted
 
   components/
     SearchBar/              # input + options (case-sensitive, whole word)
     Autocomplete/           # accessible combobox listbox
     MatchNavigator/         # ▲ ▼ buttons + "3 / 12" counter
     TextViewer/             # renders text with <mark> highlights
-    TextSourcePanel/        # paste text / upload .txt / reset to sample
     InstallButton/
     OfflineBadge/
 
   data/
-    sampleText.ts           # a long default text (mix of Persian + English paragraphs, ~20k+ chars)
+    sampleText.ts           # the demo text that is searched (mix of Persian + English paragraphs, ~20k+ chars)
 
   types.ts                  # shared types (MatchRange, Suggestion, SearchOptions...)
 
@@ -99,7 +99,7 @@ public/
   icons/                    # 192, 512, maskable-512, apple-touch-icon (generate simple SVG→PNG icons)
   offline-fallback not needed (app shell is fully cached)
 
-vite.config.ts              # includes a small custom plugin that generates sw.js (see Phase 6)
+vite.config.ts              # includes a small custom plugin that generates sw.js (see Phase 7)
 src/sw/sw-template.ts or sw-template.js  # service worker source
 ```
 
@@ -193,9 +193,6 @@ export type Segment =
 
 ### Phase 3 — Search UI + highlighting
 
-#### `useDocumentText`
-- Returns `{ text, setText, resetToSample, source }`. Persists user text in localStorage via `storage.ts` (safe wrapper with try/catch; if storage fails, app still works).
-
 #### `useSearch`
 - State: `query`, `options`, `activeIndex`.
 - Use **`useDeferredValue(query)`** so typing stays responsive while matching runs at lower priority. No artificial debounce delay needed; note this decision in a comment.
@@ -277,19 +274,7 @@ All animation in **CSS via Tailwind** (no JS animation libs).
 
 ---
 
-### Phase 7 — Text source (so the app is actually useful)
-
-`TextSourcePanel` (collapsible):
-- **Paste text** (textarea) → “Use this text”.
-- **Upload a `.txt` file** (`<input type="file" accept=".txt,text/plain">`, read with `file.text()`).
-- **Reset to sample text**.
-- Text is persisted (localStorage) so it’s available offline on next launch. If text is too big for storage, show a non-blocking message and keep it in memory.
-
-**Done when:** user can search inside their own text; it survives reload.
-
----
-
-### Phase 8 — PWA: offline + installable (no plugins)
+### Phase 7 — PWA: offline + installable (no plugins)
 
 #### Manifest — `public/manifest.webmanifest`
 - `name`, `short_name`, `start_url: "/"`, `scope: "/"`, `display: "standalone"`, `background_color`, `theme_color`, `dir: "auto"`, `lang`.
@@ -322,16 +307,16 @@ All animation in **CSS via Tailwind** (no JS animation libs).
 
 ---
 
-### Phase 9 — Polish, a11y, responsive
+### Phase 8 — Polish, a11y, responsive
 - Mobile-first layout; sticky header; large touch targets (≥ 44px) for arrows and suggestions; `env(safe-area-inset-*)` paddings.
 - Visible focus styles, full keyboard usage, `aria-live` announcements for result counts, sufficient color contrast in both themes.
-- Empty states: no text, no query, no results (“No results for ‘xyz’”).
-- Handle very long texts gracefully (test with a 1–2MB pasted text; typing must remain responsive).
+- Empty states: no query, no results (“No results for ‘xyz’”).
+- Search must stay fast on very long texts: verify with a generated 1–2MB text in tests (typing must remain responsive).
 - Add a component test for: typing → counter shows correct total; clicking ▼ moves active index & wraps; autocomplete keyboard selection.
 
 ---
 
-### Phase 10 — README
+### Phase 9 — README
 Write `README.md` (this is part of the deliverable — reviewers will read it):
 - What the app does + screenshots/GIF placeholder.
 - How to run, build, test, and test offline/install.
