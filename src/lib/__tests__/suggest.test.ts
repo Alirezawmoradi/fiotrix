@@ -33,6 +33,11 @@ describe('suggest', () => {
     ])
   })
 
+  it('breaks count and length ties alphabetically', () => {
+    const tied = buildIndex('bat bag bad')
+    expect(suggest(tied, 'ba').map((s) => s.word)).toEqual(['bad', 'bag', 'bat'])
+  })
+
   it('includes an exact match and shows the display form', () => {
     expect(suggest(index, 'react')).toEqual([
       { word: 'react', count: 3 },

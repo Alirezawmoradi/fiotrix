@@ -33,8 +33,10 @@ export function suggest(index: SearchIndex, prefix: string, limit = 8): Suggesti
 
   const countOf = (word: string): number => counts.get(word) ?? 0
 
+  // Candidates are collected in alphabetical order and `Array#sort` is stable,
+  // so remaining ties stay alphabetical without an explicit comparison.
   return candidates
-    .sort((a, b) => countOf(b) - countOf(a) || a.length - b.length || (a < b ? -1 : 1))
+    .sort((a, b) => countOf(b) - countOf(a) || a.length - b.length)
     .slice(0, limit)
     .map((word) => ({ word: display.get(word) ?? word, count: countOf(word) }))
 }
