@@ -1,111 +1,99 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import 'tailwindcss';
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/*
+ * Design tokens. Components consume these through generated utilities
+ * (e.g. `bg-highlight`, `text-highlight-active-ink`, `animate-highlight-in`).
+ */
+@theme {
+  /* System fonts only (no web-font download): Tahoma/Segoe UI render Persian well. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Tahoma, sans-serif;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f4f5;
+  --color-ink: #18181b;
+  --color-ink-muted: #52525b;
+  --color-accent: #4f46e5;
+  --color-accent-ink: #ffffff;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  /* Highlights. Text on each background meets WCAG AA (>= 4.5:1). */
+  --color-highlight: #fde68a;
+  --color-highlight-active: #c2410c;
+  --color-highlight-active-ink: #ffffff;
+
+  /*
+   * Highlight animations. Marks are inline (so phrases can wrap across lines
+   * with box-decoration-clone), and transforms do not apply to inline boxes,
+   * so the "pop" is built from background-color and box-shadow only.
+   */
+  --animate-highlight-in: highlight-in 250ms ease-out;
+  /*
+   * The active mark keeps `highlight-in` in its animation list. CSS matches
+   * animations by name, so adding/removing `active-pulse` never restarts
+   * `highlight-in`: a mark that stops being active does not flash again.
+   */
+  --animate-highlight-active: highlight-in 250ms ease-out, active-pulse 700ms ease-out;
+
+  /*
+   * Background fades in while a soft halo shrinks onto the mark. There is no
+   * `to` keyframe, so it ends on the mark's own background (normal or active).
+   */
+  @keyframes highlight-in {
+    from {
+      background-color: transparent;
+      box-shadow: 0 0 0 0.3em transparent;
+    }
+    40% {
+      box-shadow: 0 0 0 0.15em color-mix(in oklab, var(--color-highlight) 70%, transparent);
+    }
+  }
+
+  --animate-toast-in: toast-in 200ms ease-out;
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  /* A ring that expands out of the active match and fades away. */
+  @keyframes active-pulse {
+    from {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-highlight-active) 70%, transparent);
+    }
+    to {
+      box-shadow: 0 0 0 0.6em transparent;
+    }
   }
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-surface: #18181b;
+      --color-surface-muted: #27272a;
+      --color-ink: #f4f4f5;
+      --color-ink-muted: #a1a1aa;
+      --color-accent: #818cf8;
+      --color-accent-ink: #18181b;
+
+      --color-highlight: #854d0e;
+      --color-highlight-active: #fb923c;
+      --color-highlight-active-ink: #18181b;
+    }
+  }
+
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    color-scheme: light dark;
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  /* One visible keyboard focus style for every control, in both themes. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
-}
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
