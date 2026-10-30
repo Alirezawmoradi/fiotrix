@@ -105,4 +105,21 @@ describe('useMatchNavigation', () => {
     fireEvent.keyDown(window, { code: 'F3' })
     expect(setActiveIndex).not.toHaveBeenCalled()
   })
+
+  it('reports each navigation', () => {
+    const setActiveIndex = vi.fn()
+    const onNavigate = vi.fn()
+    const { result } = renderHook(() =>
+      useMatchNavigation({
+        total: 3,
+        activeIndex: 0,
+        setActiveIndex,
+        inputRef: { current: null },
+        onNavigate,
+      }),
+    )
+    act(() => result.current.next())
+    act(() => result.current.prev())
+    expect(onNavigate).toHaveBeenCalledTimes(2)
+  })
 })

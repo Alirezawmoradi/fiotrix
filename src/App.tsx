@@ -1,28 +1,49 @@
-import { useRef, type JSX } from 'react'
+import { useCallback, useRef, type JSX, type KeyboardEvent } from 'react'
+import { Autocomplete } from '@/components/Autocomplete/Autocomplete'
 import { FloatingNavigator } from '@/components/MatchNavigator/FloatingNavigator'
 import { MatchNavigator } from '@/components/MatchNavigator/MatchNavigator'
 import { SearchBar } from '@/components/SearchBar/SearchBar'
 import { TextViewer } from '@/components/TextViewer/TextViewer'
+import { useAutocomplete } from '@/hooks/useAutocomplete'
 import { useDocumentText } from '@/hooks/useDocumentText'
 import { useMatchNavigation } from '@/hooks/useMatchNavigation'
+import { useRecentSearches } from '@/hooks/useRecentSearches'
 import { useScrollToActive } from '@/hooks/useScrollToActive'
 import { useSearch } from '@/hooks/useSearch'
 
 export function App(): JSX.Element {
   const { text } = useDocumentText()
   const search = useSearch(text)
+  const { recent, addRecent } = useRecentSearches()
 
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+
+  // Navigating results means the user found what they searched for: remember it.
+  const rememberQuery = useCallback(() => addRecent(search.query), [addRecent, search.query])
 
   const navigation = useMatchNavigation({
     total: search.total,
     activeIndex: search.activeIndex,
     setActiveIndex: search.setActiveIndex,
     inputRef,
+    onNavigate: rememberQuery,
   })
   useScrollToActive(scrollRef, search.activeIndex, search.matches)
+
+  const autocomplete = useAutocomplete({
+    text,
+    query: search.query,
+    setQuery: search.setQuery,
+    recentSearches: recent,
+    onSelect: addRecent,
+  })
+
+  // An open suggestion list gets first pick of keys; Enter otherwise navigates matches.
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
+    if (!autocomplete.handleKeyDown(event)) navigation.handleInputKeyDown(event)
+  }
 
   return (
     <div className="flex h-dvh flex-col">
@@ -38,7 +59,19 @@ export function App(): JSX.Element {
             total={search.total}
             isStale={search.isStale}
             inputRef={inputRef}
-            onInputKeyDown={navigation.handleInputKeyDown}
+            onInputKeyDown={handleInputKeyDown}
+            comboboxProps={autocomplete.inputProps}
+            dropdown={
+              <Autocomplete
+                id={autocomplete.listboxId}
+                isOpen={autocomplete.isOpen}
+                items={autocomplete.items}
+                highlightedIndex={autocomplete.highlightedIndex}
+                prefixLength={autocomplete.prefixLength}
+                onSelect={autocomplete.select}
+                onHighlight={autocomplete.highlight}
+              />
+            }
           >
             <MatchNavigator
               total={search.total}

@@ -6,6 +6,8 @@ interface MatchNavigationParams {
   setActiveIndex: (index: number) => void
   /** The search input, focused by Ctrl/Cmd+F. */
   inputRef: RefObject<HTMLInputElement | null>
+  /** Called whenever the user moves between matches (e.g. to remember the search). */
+  onNavigate?: () => void
 }
 
 export interface MatchNavigation {
@@ -25,14 +27,16 @@ export function useMatchNavigation({
   activeIndex,
   setActiveIndex,
   inputRef,
+  onNavigate,
 }: MatchNavigationParams): MatchNavigation {
   const step = useCallback(
     (delta: number) => {
       if (total === 0) return
       // Adding `total` before `%` keeps the result positive when stepping back from 0.
       setActiveIndex((activeIndex + delta + total) % total)
+      onNavigate?.()
     },
-    [total, activeIndex, setActiveIndex],
+    [total, activeIndex, setActiveIndex, onNavigate],
   )
 
   const next = useCallback(() => step(1), [step])

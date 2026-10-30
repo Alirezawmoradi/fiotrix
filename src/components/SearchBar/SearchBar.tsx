@@ -1,4 +1,5 @@
 import type { JSX, KeyboardEvent, ReactNode, RefObject } from 'react'
+import type { ComboboxInputProps } from '@/hooks/useAutocomplete'
 import { cn } from '@/lib/cn'
 import type { SearchOptions } from '@/types'
 
@@ -25,6 +26,10 @@ interface SearchBarProps {
   isStale: boolean
   inputRef: RefObject<HTMLInputElement | null>
   onInputKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+  /** Combobox ARIA/focus props when the input drives a suggestion list. */
+  comboboxProps?: ComboboxInputProps
+  /** Rendered under the input (e.g. the suggestion list). */
+  dropdown?: ReactNode
   /** Rendered at the end of the result summary row (e.g. the match navigator). */
   children?: ReactNode
 }
@@ -39,6 +44,8 @@ export function SearchBar({
   isStale,
   inputRef,
   onInputKeyDown,
+  comboboxProps,
+  dropdown,
   children,
 }: SearchBarProps): JSX.Element {
   function clear(): void {
@@ -52,6 +59,7 @@ export function SearchBar({
         <div className="relative flex-1">
           <SearchIcon />
           <input
+            {...comboboxProps}
             ref={inputRef}
             type="search"
             dir="auto"
@@ -76,6 +84,7 @@ export function SearchBar({
               <ClearIcon />
             </button>
           )}
+          {dropdown}
         </div>
 
         <OptionToggle
