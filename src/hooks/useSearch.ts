@@ -18,6 +18,8 @@ export interface Search {
   setActiveIndex: (index: number) => void
   /** True while results for the latest keystroke are still being computed. */
   isStale: boolean
+  /** Identifies the current search (query + options); changes whenever a new search runs. */
+  searchKey: string
 }
 
 export function useSearch(text: string): Search {
@@ -61,5 +63,6 @@ export function useSearch(text: string): Search {
     activeIndex,
     setActiveIndex,
     isStale: query !== searchedQuery,
+    searchKey: `${Number(options.caseSensitive)}${Number(options.wholeWord)}:${searchedQuery}`,
   }
 }

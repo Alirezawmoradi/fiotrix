@@ -6,13 +6,19 @@ import type { MatchRange } from '@/types'
 
 const NO_MATCHES: readonly MatchRange[] = []
 
-const MARK_CLASSES = 'rounded-sm bg-highlight text-inherit box-decoration-clone'
-const ACTIVE_MARK_CLASSES = 'bg-highlight-active text-white'
+const MARK_CLASSES = cn(
+  'rounded-sm box-decoration-clone',
+  'transition-[background-color,color] duration-200 motion-reduce:animate-none',
+)
+const INACTIVE_MARK_CLASSES = 'bg-highlight text-inherit animate-highlight-in'
+const ACTIVE_MARK_CLASSES = 'bg-highlight-active text-highlight-active-ink animate-highlight-active'
 
 interface TextViewerProps {
   text: string
   matches: readonly MatchRange[]
   activeIndex: number
+  /** Changes with every new search; remounts the marks so they animate in again. */
+  highlightKey: string
 }
 
 /**
@@ -26,6 +32,7 @@ export const TextViewer = memo(function TextViewer({
   text,
   matches,
   activeIndex,
+  highlightKey,
 }: TextViewerProps): JSX.Element {
   const paragraphs = useMemo(() => splitParagraphs(text), [text])
   const spans = useMemo(() => groupMatchesByParagraph(paragraphs, matches), [paragraphs, matches])
@@ -49,6 +56,7 @@ export const TextViewer = memo(function TextViewer({
               firstMatch={hasMatches ? first : 0}
               endMatch={hasMatches ? end : 0}
               activeIndex={containsActive ? activeIndex : -1}
+              highlightKey={hasMatches ? highlightKey : ''}
             />
           )
         })}
@@ -67,6 +75,7 @@ interface ParagraphViewProps {
   endMatch: number
   /** Global index of the active match if it is in this paragraph, else -1. */
   activeIndex: number
+  highlightKey: string
 }
 
 const ParagraphView = memo(function ParagraphView({
@@ -76,6 +85,7 @@ const ParagraphView = memo(function ParagraphView({
   firstMatch,
   endMatch,
   activeIndex,
+  highlightKey,
 }: ParagraphViewProps): JSX.Element {
   const segments = buildSegments(text, matches.slice(firstMatch, endMatch), offset, firstMatch)
 
@@ -87,10 +97,12 @@ const ParagraphView = memo(function ParagraphView({
         const isActive = segment.matchIndex === activeIndex
         return (
           <mark
-            key={i}
+            // Keyed by search, not just position: a new search remounts only
+            // the marks (never the paragraph), replaying their appear animation.
+            key={`${highlightKey}:${i}`}
             data-match-index={segment.matchIndex}
             aria-current={isActive ? 'true' : undefined}
-            className={cn(MARK_CLASSES, isActive && ACTIVE_MARK_CLASSES)}
+            className={cn(MARK_CLASSES, isActive ? ACTIVE_MARK_CLASSES : INACTIVE_MARK_CLASSES)}
           >
             {segment.text}
           </mark>

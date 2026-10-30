@@ -2,7 +2,7 @@
 
 /*
  * Design tokens. Components consume these through generated utilities
- * (e.g. `bg-highlight`, `bg-highlight-active`, `bg-surface`).
+ * (e.g. `bg-highlight`, `text-highlight-active-ink`, `animate-highlight-in`).
  */
 @theme {
   /* System fonts only (no web-font download): Tahoma/Segoe UI render Persian well. */
@@ -14,8 +14,47 @@
   --color-ink-muted: #52525b;
   --color-accent: #4f46e5;
 
+  /* Highlights. Text on each background meets WCAG AA (>= 4.5:1). */
   --color-highlight: #fde68a;
-  --color-highlight-active: #f97316;
+  --color-highlight-active: #c2410c;
+  --color-highlight-active-ink: #ffffff;
+
+  /*
+   * Highlight animations. Marks are inline (so phrases can wrap across lines
+   * with box-decoration-clone), and transforms do not apply to inline boxes,
+   * so the "pop" is built from background-color and box-shadow only.
+   */
+  --animate-highlight-in: highlight-in 250ms ease-out;
+  /*
+   * The active mark keeps `highlight-in` in its animation list. CSS matches
+   * animations by name, so adding/removing `active-pulse` never restarts
+   * `highlight-in`: a mark that stops being active does not flash again.
+   */
+  --animate-highlight-active: highlight-in 250ms ease-out, active-pulse 700ms ease-out;
+
+  /*
+   * Background fades in while a soft halo shrinks onto the mark. There is no
+   * `to` keyframe, so it ends on the mark's own background (normal or active).
+   */
+  @keyframes highlight-in {
+    from {
+      background-color: transparent;
+      box-shadow: 0 0 0 0.3em transparent;
+    }
+    40% {
+      box-shadow: 0 0 0 0.15em color-mix(in oklab, var(--color-highlight) 70%, transparent);
+    }
+  }
+
+  /* A ring that expands out of the active match and fades away. */
+  @keyframes active-pulse {
+    from {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-highlight-active) 70%, transparent);
+    }
+    to {
+      box-shadow: 0 0 0 0.6em transparent;
+    }
+  }
 }
 
 @layer base {
@@ -28,7 +67,8 @@
       --color-accent: #818cf8;
 
       --color-highlight: #854d0e;
-      --color-highlight-active: #ea580c;
+      --color-highlight-active: #fb923c;
+      --color-highlight-active-ink: #18181b;
     }
   }
 

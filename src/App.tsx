@@ -25,7 +25,12 @@ export function App(): JSX.Element {
         </div>
       </header>
 
-      <TextViewer text={text} matches={search.matches} activeIndex={search.activeIndex} />
+      <TextViewer
+        text={text}
+        matches={search.matches}
+        activeIndex={search.activeIndex}
+        highlightKey={search.searchKey}
+      />
     </div>
   )
 }

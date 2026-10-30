@@ -59,4 +59,16 @@ describe('useSearch', () => {
     expect(result.current.total).toBe(2)
     expect(result.current.activeIndex).toBe(0)
   })
+
+  it('changes the search key for a new query or new options', () => {
+    const { result } = renderHook(() => useSearch(TEXT))
+    act(() => result.current.setQuery('react'))
+    const byQuery = result.current.searchKey
+
+    act(() => result.current.setActiveIndex(1))
+    expect(result.current.searchKey).toBe(byQuery)
+
+    act(() => result.current.setOptions({ caseSensitive: true, wholeWord: false }))
+    expect(result.current.searchKey).not.toBe(byQuery)
+  })
 })
