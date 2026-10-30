@@ -1,4 +1,4 @@
-import { useRef, type JSX, type ReactNode } from 'react'
+import type { JSX, KeyboardEvent, ReactNode, RefObject } from 'react'
 import { cn } from '@/lib/cn'
 import type { SearchOptions } from '@/types'
 
@@ -23,6 +23,10 @@ interface SearchBarProps {
   searchedQuery: string
   total: number
   isStale: boolean
+  inputRef: RefObject<HTMLInputElement | null>
+  onInputKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+  /** Rendered at the end of the result summary row (e.g. the match navigator). */
+  children?: ReactNode
 }
 
 export function SearchBar({
@@ -33,9 +37,10 @@ export function SearchBar({
   searchedQuery,
   total,
   isStale,
+  inputRef,
+  onInputKeyDown,
+  children,
 }: SearchBarProps): JSX.Element {
-  const inputRef = useRef<HTMLInputElement>(null)
-
   function clear(): void {
     onQueryChange('')
     inputRef.current?.focus()
@@ -58,6 +63,7 @@ export function SearchBar({
             placeholder="Search the text…"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
+            onKeyDown={onInputKeyDown}
             className={INPUT_CLASSES}
           />
           {query !== '' && (
@@ -88,12 +94,15 @@ export function SearchBar({
         </OptionToggle>
       </div>
 
-      <p
-        aria-live="polite"
-        className={cn('min-h-5 text-sm text-ink-muted transition-opacity', isStale && 'opacity-50')}
-      >
-        {resultSummary(searchedQuery, total)}
-      </p>
+      <div className="flex min-h-11 items-center justify-between gap-2">
+        <p
+          aria-live="polite"
+          className={cn('text-sm text-ink-muted transition-opacity', isStale && 'opacity-50')}
+        >
+          {resultSummary(searchedQuery, total)}
+        </p>
+        {children}
+      </div>
     </div>
   )
 }

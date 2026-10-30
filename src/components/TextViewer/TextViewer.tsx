@@ -22,7 +22,7 @@ interface TextViewerProps {
 }
 
 /**
- * Scrollable reading area with highlighted matches.
+ * The text with highlighted matches. The parent provides the scroll container.
  *
  * Memoized, and split into memoized paragraphs: when the active match moves,
  * only the one or two paragraphs containing the old/new active match
@@ -38,30 +38,28 @@ export const TextViewer = memo(function TextViewer({
   const spans = useMemo(() => groupMatchesByParagraph(paragraphs, matches), [paragraphs, matches])
 
   return (
-    <main className="flex-1 overflow-y-auto">
-      <article className="mx-auto max-w-3xl space-y-4 px-4 py-6 leading-relaxed">
-        {paragraphs.map((paragraph, i) => {
-          const { first, end } = spans[i] ?? { first: 0, end: 0 }
-          const hasMatches = end > first
-          const containsActive = activeIndex >= first && activeIndex < end
+    <article className="space-y-4 px-4 py-6 leading-relaxed">
+      {paragraphs.map((paragraph, i) => {
+        const { first, end } = spans[i] ?? { first: 0, end: 0 }
+        const hasMatches = end > first
+        const containsActive = activeIndex >= first && activeIndex < end
 
-          // Paragraphs without matches always receive identical props,
-          // so React.memo skips them entirely.
-          return (
-            <ParagraphView
-              key={i}
-              text={paragraph.text}
-              offset={paragraph.start}
-              matches={hasMatches ? matches : NO_MATCHES}
-              firstMatch={hasMatches ? first : 0}
-              endMatch={hasMatches ? end : 0}
-              activeIndex={containsActive ? activeIndex : -1}
-              highlightKey={hasMatches ? highlightKey : ''}
-            />
-          )
-        })}
-      </article>
-    </main>
+        // Paragraphs without matches always receive identical props,
+        // so React.memo skips them entirely.
+        return (
+          <ParagraphView
+            key={i}
+            text={paragraph.text}
+            offset={paragraph.start}
+            matches={hasMatches ? matches : NO_MATCHES}
+            firstMatch={hasMatches ? first : 0}
+            endMatch={hasMatches ? end : 0}
+            activeIndex={containsActive ? activeIndex : -1}
+            highlightKey={hasMatches ? highlightKey : ''}
+          />
+        )
+      })}
+    </article>
   )
 })
 

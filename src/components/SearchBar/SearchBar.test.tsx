@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ComponentProps } from 'react'
+import { createRef, type ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { SearchBar } from '@/components/SearchBar/SearchBar'
 
@@ -15,6 +15,7 @@ function renderSearchBar(overrides: Partial<Props> = {}): Props {
     searchedQuery: '',
     total: 0,
     isStale: false,
+    inputRef: createRef<HTMLInputElement>(),
     ...overrides,
   }
   render(<SearchBar {...props} />)

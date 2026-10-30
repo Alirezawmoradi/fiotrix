@@ -1,12 +1,28 @@
-import type { JSX } from 'react'
+import { useRef, type JSX } from 'react'
+import { FloatingNavigator } from '@/components/MatchNavigator/FloatingNavigator'
+import { MatchNavigator } from '@/components/MatchNavigator/MatchNavigator'
 import { SearchBar } from '@/components/SearchBar/SearchBar'
 import { TextViewer } from '@/components/TextViewer/TextViewer'
 import { useDocumentText } from '@/hooks/useDocumentText'
+import { useMatchNavigation } from '@/hooks/useMatchNavigation'
+import { useScrollToActive } from '@/hooks/useScrollToActive'
 import { useSearch } from '@/hooks/useSearch'
 
 export function App(): JSX.Element {
   const { text } = useDocumentText()
   const search = useSearch(text)
+
+  const inputRef = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const navigation = useMatchNavigation({
+    total: search.total,
+    activeIndex: search.activeIndex,
+    setActiveIndex: search.setActiveIndex,
+    inputRef,
+  })
+  useScrollToActive(scrollRef, search.activeIndex, search.matches)
 
   return (
     <div className="flex h-dvh flex-col">
@@ -21,16 +37,37 @@ export function App(): JSX.Element {
             searchedQuery={search.searchedQuery}
             total={search.total}
             isStale={search.isStale}
-          />
+            inputRef={inputRef}
+            onInputKeyDown={navigation.handleInputKeyDown}
+          >
+            <MatchNavigator
+              total={search.total}
+              activeIndex={search.activeIndex}
+              onPrev={navigation.prev}
+              onNext={navigation.next}
+            />
+          </SearchBar>
         </div>
       </header>
 
-      <TextViewer
-        text={text}
-        matches={search.matches}
-        activeIndex={search.activeIndex}
-        highlightKey={search.searchKey}
-      />
+      {/* The text area scrolls on its own so the header stays in view. */}
+      <main ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div ref={contentRef} className="relative mx-auto max-w-3xl">
+          <TextViewer
+            text={text}
+            matches={search.matches}
+            activeIndex={search.activeIndex}
+            highlightKey={search.searchKey}
+          />
+          <FloatingNavigator
+            containerRef={contentRef}
+            matches={search.matches}
+            activeIndex={search.activeIndex}
+            onPrev={navigation.prev}
+            onNext={navigation.next}
+          />
+        </div>
+      </main>
     </div>
   )
 }
