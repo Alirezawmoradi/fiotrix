@@ -4,16 +4,14 @@ import { cn } from '@/lib/cn'
 import type { SearchOptions } from '@/types'
 
 const INPUT_CLASSES = cn(
-  'w-full rounded-lg border border-ink/15 bg-surface-muted py-2.5 ps-10 pe-10 text-base',
-  'placeholder:text-ink-muted focus:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+  'w-full rounded-lg border border-ink/15 bg-surface-muted py-2.5 ps-10 pe-11 text-base',
+  'placeholder:text-ink-muted focus:border-accent',
   // Hide the browser's own clear button; we render a consistent one.
   '[&::-webkit-search-cancel-button]:appearance-none',
 )
 
-const TOGGLE_CLASSES = cn(
-  'flex h-11 min-w-11 items-center justify-center rounded-lg border px-2 text-sm font-medium transition-colors',
-  'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none',
-)
+const TOGGLE_CLASSES =
+  'flex h-11 min-w-11 items-center justify-center rounded-lg border px-2 text-sm font-medium transition-colors'
 
 interface SearchBarProps {
   query: string
@@ -79,7 +77,7 @@ export function SearchBar({
               type="button"
               aria-label="Clear search"
               onClick={clear}
-              className="absolute inset-y-0 end-0 flex w-10 items-center justify-center text-ink-muted hover:text-ink"
+              className="absolute inset-y-0 end-0 flex w-11 items-center justify-center text-ink-muted hover:text-ink"
             >
               <ClearIcon />
             </button>
@@ -106,7 +104,10 @@ export function SearchBar({
       <div className="flex min-h-11 items-center justify-between gap-2">
         <p
           aria-live="polite"
-          className={cn('text-sm text-ink-muted transition-opacity', isStale && 'opacity-50')}
+          className={cn(
+            'min-w-0 truncate text-sm text-ink-muted transition-opacity',
+            isStale && 'opacity-50',
+          )}
         >
           {resultSummary(searchedQuery, total)}
         </p>
@@ -116,9 +117,17 @@ export function SearchBar({
   )
 }
 
-function resultSummary(searchedQuery: string, total: number): string {
-  if (searchedQuery.trim() === '') return ''
-  if (total === 0) return 'No results'
+function resultSummary(searchedQuery: string, total: number): ReactNode {
+  const searched = searchedQuery.trim()
+  if (searched === '') return 'Type a word or phrase to find it in the text'
+  // <bdi> keeps a Persian query and the English sentence in the right visual order.
+  if (total === 0) {
+    return (
+      <>
+        No results for “<bdi>{searched}</bdi>”
+      </>
+    )
+  }
   return total === 1 ? '1 result' : `${total.toLocaleString()} results`
 }
 
@@ -140,7 +149,7 @@ function OptionToggle({ label, pressed, onToggle, children }: OptionToggleProps)
       className={cn(
         TOGGLE_CLASSES,
         pressed
-          ? 'border-accent bg-accent text-white'
+          ? 'border-accent bg-accent text-accent-ink'
           : 'border-ink/15 bg-surface-muted text-ink-muted hover:text-ink',
       )}
     >

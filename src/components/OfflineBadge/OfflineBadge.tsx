@@ -11,7 +11,7 @@ export function OfflineBadge(): JSX.Element {
       {!isOnline && (
         <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-          Offline — everything still works
+          Offline<span className="hidden sm:inline"> — everything still works</span>
         </span>
       )}
     </p>

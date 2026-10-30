@@ -3,7 +3,7 @@ import { optionId, type AutocompleteItem } from '@/hooks/useAutocomplete'
 import { cn } from '@/lib/cn'
 
 const LIST_CLASSES = cn(
-  'absolute inset-x-0 top-full z-20 mt-1 max-h-80 overflow-y-auto rounded-lg border border-ink/10 bg-surface py-1 shadow-lg',
+  'absolute inset-x-0 top-full z-20 mt-1 max-h-[40dvh] overflow-y-auto rounded-lg border border-ink/10 bg-surface py-1 shadow-lg',
   'origin-top transition-[opacity,translate,visibility] duration-150 ease-out motion-reduce:transition-none',
 )
 

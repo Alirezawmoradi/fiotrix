@@ -1,11 +1,8 @@
 import { useId, useState, type JSX } from 'react'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
-import { cn } from '@/lib/cn'
 
-const BUTTON_CLASSES = cn(
-  'inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-accent transition-colors',
-  'hover:bg-accent/10 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none',
-)
+const BUTTON_CLASSES =
+  'inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-accent transition-colors hover:bg-accent/10'
 
 /**
  * "Install" button. Uses the browser's install prompt where available; on iOS,

@@ -19,6 +19,7 @@ describe('App', () => {
     const total = document.querySelectorAll('mark').length
     expect(total).toBeGreaterThan(1)
     expect(screen.getByText(`${total} results`)).toBeInTheDocument()
+    expect(screen.getByText(/^Result/).parentElement).toHaveTextContent(`Result 1 / of ${total}`)
     expect(activeMark()).toHaveAttribute('data-match-index', '0')
   })
 

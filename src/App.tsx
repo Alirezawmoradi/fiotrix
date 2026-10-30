@@ -13,6 +13,10 @@ import { useMatchNavigation } from '@/hooks/useMatchNavigation'
 import { useRecentSearches } from '@/hooks/useRecentSearches'
 import { useScrollToActive } from '@/hooks/useScrollToActive'
 import { useSearch } from '@/hooks/useSearch'
+import { cn } from '@/lib/cn'
+
+// Keeps content clear of notches and rounded corners when the app runs edge to edge.
+const SAFE_AREA_SIDES = 'pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)]'
 
 // The app searches a single built-in demo text.
 const text = sampleText
@@ -52,11 +56,18 @@ export function App(): JSX.Element {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="sticky top-0 z-10 shrink-0 border-b border-ink/10 bg-surface/90 backdrop-blur">
+      <header
+        className={cn(
+          'sticky top-0 z-10 shrink-0 border-b border-ink/10 bg-surface/90 pt-[env(safe-area-inset-top)] backdrop-blur',
+          SAFE_AREA_SIDES,
+        )}
+      >
         <div className="mx-auto flex max-w-3xl flex-col gap-2 px-4 pt-3">
           <div className="flex items-center justify-between gap-2">
-            <h1 className="text-sm font-semibold text-ink-muted">Smart Search Reader</h1>
-            <div className="flex items-center gap-1">
+            <h1 className="min-w-0 truncate text-sm font-semibold text-ink-muted">
+              Smart Search Reader
+            </h1>
+            <div className="flex shrink-0 items-center gap-1">
               <OfflineBadge />
               <InstallButton />
             </div>
@@ -94,8 +105,17 @@ export function App(): JSX.Element {
         </div>
       </header>
 
-      {/* The text area scrolls on its own so the header stays in view. */}
-      <main ref={scrollRef} className="flex-1 overflow-y-auto">
+      {/* The text area scrolls on its own so the header stays in view, and is focusable
+          so keyboard users can scroll it with the arrow keys. */}
+      <main
+        ref={scrollRef}
+        tabIndex={0}
+        aria-label="Text"
+        className={cn(
+          'flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)] -outline-offset-2',
+          SAFE_AREA_SIDES,
+        )}
+      >
         <div ref={contentRef} className="relative mx-auto max-w-3xl">
           <TextViewer
             text={text}

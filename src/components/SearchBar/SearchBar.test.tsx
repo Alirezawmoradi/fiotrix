@@ -29,13 +29,17 @@ describe('SearchBar', () => {
     expect(props.onQueryChange).toHaveBeenCalledWith('a')
   })
 
-  it('shows no summary without a query', () => {
+  it('invites the user to search when there is no query', () => {
     renderSearchBar()
-    expect(screen.queryByText(/result/)).not.toBeInTheDocument()
+    expect(screen.getByText('Type a word or phrase to find it in the text')).toBeInTheDocument()
+  })
+
+  it('names the query when nothing was found', () => {
+    renderSearchBar({ query: 'xyz', searchedQuery: ' xyz ', total: 0 })
+    expect(screen.getByText(/No results for/)).toHaveTextContent('No results for “xyz”')
   })
 
   it.each([
-    [0, 'No results'],
     [1, '1 result'],
     [12, '12 results'],
   ])('summarizes %i matches as "%s"', (total, summary) => {

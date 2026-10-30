@@ -1,10 +1,8 @@
 import type { JSX } from 'react'
 import { cn } from '@/lib/cn'
 
-const NAV_BUTTON_CLASSES = cn(
-  'flex size-11 items-center justify-center rounded-lg text-ink-muted transition-colors',
-  'hover:bg-ink/10 hover:text-ink focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none',
-)
+const NAV_BUTTON_CLASSES =
+  'flex size-11 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-ink/10 hover:text-ink'
 
 interface MatchNavigatorProps {
   total: number

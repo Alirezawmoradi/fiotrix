@@ -11,7 +11,7 @@ export function UpdateToast(): JSX.Element {
   return (
     <div
       role="status"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center p-4"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
     >
       {isVisible && (
         <div className="pointer-events-auto flex animate-toast-in items-center gap-3 rounded-xl bg-ink py-2 ps-4 pe-2 text-sm text-surface shadow-lg motion-reduce:animate-none">
@@ -19,7 +19,7 @@ export function UpdateToast(): JSX.Element {
           <button
             type="button"
             onClick={applyUpdate}
-            className="min-h-11 rounded-lg px-3 font-semibold underline underline-offset-2 hover:bg-surface/10 focus-visible:ring-2 focus-visible:ring-surface/60 focus-visible:outline-none"
+            className="min-h-11 rounded-lg px-3 font-semibold underline underline-offset-2 hover:bg-surface/10 focus-visible:outline-surface"
           >
             Reload
           </button>
@@ -27,7 +27,7 @@ export function UpdateToast(): JSX.Element {
             type="button"
             aria-label="Dismiss"
             onClick={() => setIsDismissed(true)}
-            className="flex size-11 items-center justify-center rounded-lg hover:bg-surface/10 focus-visible:ring-2 focus-visible:ring-surface/60 focus-visible:outline-none"
+            className="flex size-11 items-center justify-center rounded-lg hover:bg-surface/10 focus-visible:outline-surface"
           >
             <svg
               aria-hidden="true"
