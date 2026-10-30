@@ -1,9 +1,12 @@
 import { useCallback, useRef, type JSX, type KeyboardEvent } from 'react'
 import { Autocomplete } from '@/components/Autocomplete/Autocomplete'
+import { InstallButton } from '@/components/InstallButton/InstallButton'
 import { FloatingNavigator } from '@/components/MatchNavigator/FloatingNavigator'
 import { MatchNavigator } from '@/components/MatchNavigator/MatchNavigator'
+import { OfflineBadge } from '@/components/OfflineBadge/OfflineBadge'
 import { SearchBar } from '@/components/SearchBar/SearchBar'
 import { TextViewer } from '@/components/TextViewer/TextViewer'
+import { UpdateToast } from '@/components/UpdateToast/UpdateToast'
 import { sampleText } from '@/data/sampleText'
 import { useAutocomplete } from '@/hooks/useAutocomplete'
 import { useMatchNavigation } from '@/hooks/useMatchNavigation'
@@ -51,7 +54,13 @@ export function App(): JSX.Element {
     <div className="flex h-dvh flex-col">
       <header className="sticky top-0 z-10 shrink-0 border-b border-ink/10 bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl flex-col gap-2 px-4 pt-3">
-          <h1 className="text-sm font-semibold text-ink-muted">Smart Search Reader</h1>
+          <div className="flex items-center justify-between gap-2">
+            <h1 className="text-sm font-semibold text-ink-muted">Smart Search Reader</h1>
+            <div className="flex items-center gap-1">
+              <OfflineBadge />
+              <InstallButton />
+            </div>
+          </div>
           <SearchBar
             query={search.query}
             onQueryChange={search.setQuery}
@@ -103,6 +112,8 @@ export function App(): JSX.Element {
           />
         </div>
       </main>
+
+      <UpdateToast />
     </div>
   )
 }
