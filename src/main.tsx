@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from '@/App'
+import { registerServiceWorker } from '@/sw/registerServiceWorker'
 import './index.css'
 
 const rootElement = document.getElementById('root')
@@ -11,3 +12,6 @@ createRoot(rootElement).render(
     <App />
   </StrictMode>,
 )
+
+// Only in production: in development, a caching worker would serve stale code.
+if (import.meta.env.PROD) registerServiceWorker()
