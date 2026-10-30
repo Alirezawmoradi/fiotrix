@@ -4,15 +4,17 @@ import { FloatingNavigator } from '@/components/MatchNavigator/FloatingNavigator
 import { MatchNavigator } from '@/components/MatchNavigator/MatchNavigator'
 import { SearchBar } from '@/components/SearchBar/SearchBar'
 import { TextViewer } from '@/components/TextViewer/TextViewer'
+import { sampleText } from '@/data/sampleText'
 import { useAutocomplete } from '@/hooks/useAutocomplete'
-import { useDocumentText } from '@/hooks/useDocumentText'
 import { useMatchNavigation } from '@/hooks/useMatchNavigation'
 import { useRecentSearches } from '@/hooks/useRecentSearches'
 import { useScrollToActive } from '@/hooks/useScrollToActive'
 import { useSearch } from '@/hooks/useSearch'
 
+// The app searches a single built-in demo text.
+const text = sampleText
+
 export function App(): JSX.Element {
-  const { text } = useDocumentText()
   const search = useSearch(text)
   const { recent, addRecent } = useRecentSearches()
 
