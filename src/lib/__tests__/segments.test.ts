@@ -42,6 +42,14 @@ describe('buildSegments', () => {
     ])
   })
 
+  it('renders one paragraph using full-text offsets and global match indexes', () => {
+    // Paragraph "a cat" starts at offset 10 and its match is the 4th overall.
+    expect(buildSegments('a cat', [{ start: 12, end: 15 }], 10, 3)).toEqual([
+      { kind: 'text', text: 'a ' },
+      { kind: 'match', text: 'cat', matchIndex: 3 },
+    ])
+  })
+
   it('reconstructs the original text exactly', () => {
     const text = 'React and react — كتاب و کتاب ۱۴۰۳ İİ react.'
     for (const query of ['react', 'کتاب', '1403', 'a', 'zzz']) {
